@@ -19,24 +19,26 @@ def check_file(fastq_file):
     """
     if os.path.exists(fastq_file):
         print(f"The file {fastq_file} is going to be analysed...")
+        return True
     else:
-        sys.exit("The file does not exists !")
+        print("The file does not exists !")
+        return False
 
 
 def parse_arguments():
-    """Return the path of the fastq file.
+    """Return the path of the fastq files.
 
     Parameters
     ----------
     -h : for help
-    fastq : the path of the fastq file
+    fastq : the path of the fastq files separated with space
 
     Returns
     -------
     str : the path of the fastq file
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("fastq", help="pass your fastq file")
+    parser.add_argument("fastq", nargs="+", type=str ,help="pass your fastq files path separated with space")
     args = parser.parse_args()
     return args.fastq
 
@@ -92,8 +94,9 @@ def calculates_stats(fastq_file):
 
 if __name__ == '__main__':
     # parsing the arguments
-    fastq_file = parse_arguments()
-    # checking the existance of the file
-    check_file(fastq_file)
-    # calculating the statistics
-    calculates_stats(fastq_file)
+    fastq_files = parse_arguments()
+    for fastq_file in fastq_files:
+        # checking the existance of the file
+        if check_file(fastq_file):
+            # calculating the statistics
+            calculates_stats(fastq_file)
