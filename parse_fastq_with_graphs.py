@@ -3,6 +3,8 @@
 import argparse
 import os
 import re
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def check_file(fastq_file):
@@ -82,20 +84,64 @@ def calculates_stats(fastq_file):
                 gc_proportion += ((line.count("G")+line.count("C"))/read_length)*100
             else:
                 find_plus = False
+
+    mean_reads_length = round(reads_length/total_reads, 2)
+    mean_gc_proportion = round(gc_proportion/total_reads, 2)
     # To print the results, I use f-strings.
     print(f"There are {str(total_reads)} reads in the sample.")
-    print(f"The mean length of the reads is {str(round(reads_length/total_reads, 2))} bases.")  # I also normalize the reads length to get a mean.
-    print(f"The mean GC percentage is {str(round(gc_proportion/total_reads, 2))}%")  # As for the GC proportion.
+    print(f"The mean length of the reads is {str(mean_reads_length)} bases.")  # I also normalize the reads length to get a mean.
+    print(f"The mean GC percentage is {str(mean_gc_proportion)}%")  # As for the GC proportion.
     print("Doublet frequency for the first two bases of each read :")
     for k, v in two_first_bases.items():
         print(f"{k} -> {str(v/total_reads)}")
+    return [total_reads, mean_reads_length, mean_gc_proportion]
 
 
+def plot_results(file_names, stats_np):
+    """Plot total number of reads, mean read length and mean GC proportion for each sample.
+
+    Parameters:
+    -----------
+    file_names : the fastq file names
+
+    Returns:
+    --------
+    None : prints the bar plots
+    """
+    fig,(ax1,ax2,ax3) = plt.subplots(1,3, figsize=(5*len(stats_np), 6))
+    bar1 = ax1.bar(file_names, stats_np[:,0], color="green")
+    ax1.set_title("Total number of reads")
+    bar2 = ax2.bar(file_names, stats_np[:,1],color="blue")
+    ax2.set_title("Mean read length")
+    bar3 = ax3.bar(file_names, stats_np[:,2],color="red")
+    ax3.set_title("Mean GC proportion")
+    ax1.set_xticks(range(len(file_names)))
+    ax2.set_xticks(range(len(file_names)))
+    ax3.set_xticks(range(len(file_names)))
+    ax1.set_xticklabels(file_names, rotation=45, ha='right', fontsize=7)
+    ax2.set_xticklabels(file_names, rotation=45, ha='right', fontsize=7)
+    ax3.set_xticklabels(file_names, rotation=45, ha='right', fontsize=7)
+    ax1.bar_label(bar1)
+    ax2.bar_label(bar2)
+    ax3.bar_label(bar3)
+    plt.tight_layout() 
+    plt.show()
+    
 if __name__ == '__main__':
     # parsing the arguments
     fastq_files = parse_arguments()
+    concat_stats = []
+    file_names = []
     for fastq_file in fastq_files:
         # checking the existance of the file
         if check_file(fastq_file):
             # calculating the statistics
-            calculates_stats(fastq_file)
+            file_names.append(fastq_file)
+            stats = calculates_stats(fastq_file)
+            concat_stats.append(stats)
+    concat_stats_np = np.array(concat_stats)
+    if len(file_names) > 1:
+        # In order to compare results from different samples, plotting the results can be useful.
+        # I decide to plot the results only if there are at least two samples.
+        plot_results(file_names, concat_stats_np)
+    
