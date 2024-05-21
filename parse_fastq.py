@@ -1,7 +1,6 @@
 """Parse a fastq file and calculate some statistics."""
 
 import argparse
-import sys
 import os
 import re
 
@@ -85,7 +84,7 @@ def calculates_stats(fastq_file):
                 find_plus = False
     # To print the results, I use f-strings.
     print(f"There are {str(total_reads)} reads in the sample.")
-    print(f"The mean length of the reads is {str(round(reads_length/total_reads, 2))}.")  # I also normalize the reads length to get a mean.
+    print(f"The mean length of the reads is {str(round(reads_length/total_reads, 2))} bases.")  # I also normalize the reads length to get a mean.
     print(f"The mean GC percentage is {str(round(gc_proportion/total_reads, 2))}%")  # As for the GC proportion
     print("Doublet frequency for the first two bases of each read :")
     for k, v in two_first_bases.items():
