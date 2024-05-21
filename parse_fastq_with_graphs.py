@@ -103,6 +103,7 @@ def plot_results(file_names, stats_np):
     Parameters:
     -----------
     file_names : the fastq file names
+    stats_np : concatenated statistics results for each sample (numpy array)
 
     Returns:
     --------
