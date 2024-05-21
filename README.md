@@ -10,7 +10,7 @@ The script parse_fastq.py calculates the following statistics from a fastq file:
 
 - doublet frequency of the two first bases
 
-Before running the script, you must install the packages argparse and re (pip or conda)
+Before running the script, you must install the packages argparse, re, numpy and matplotlib (pip or conda)
 
 - To run, an example:
 
